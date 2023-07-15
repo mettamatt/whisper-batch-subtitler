@@ -5,7 +5,7 @@ extensions="mp4,mkv,avi,flv,wmv"
 language="en"
 output_format="txt,vtt,srt,tsv,json"
 nice_flag=0
-nice_command=''
+=''
 task="transcribe"
 model="small"
 
@@ -164,9 +164,22 @@ while (( "$#" )); do
       fi
       ;;
     -n|--nice)
-      if [ -n "$2" ] && [ "$2" != "-" ]; then
-        nice_flag=$2
-        shift 2
+      if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
+        if [ "$2" -eq 0 ] || [ "$2" -eq 1 ]; then
+          nice_flag=$2
+          # Move nice_flag check here
+          if [ "$nice_flag" -eq 1 ]; then
+            if command -v ionice >/dev/null 2>&1; then
+              nice_command='nice -n 19 ionice -c 3'
+            else
+              nice_command='nice -n 19'
+            fi
+          fi
+          shift 2
+        else
+          echo "Error: Invalid argument for '--nice'/'-n'. Use either 0 or 1." >&2
+          exit 1
+        fi
       else
         echo "Error: Argument for '--nice'/'-n' is missing" >&2
         exit 1
