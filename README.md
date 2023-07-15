@@ -1,6 +1,6 @@
 # Bash Script for Whisper Video Transcription and Translation
  
-Automates subtitle creation for multiple videos using OpenAI's speech recognition model, Whisper.
+Automates subtitle creation for multiple videos using OpenAI's speech recognition model, (Whisper)[https://github.com/openai/whisper].
 
 ## Overview
 
