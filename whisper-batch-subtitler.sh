@@ -219,10 +219,10 @@ done
 eval set -- "$PARAMS"
 
 # Check if a directory has been specified, if not, use the current directory
-if [ -z "$1" ]; then
+if [ -z "$@" ]; then
     dir="."
 else
-    dir="${1%/}"
+    dir="${@%/}"
 fi
 
 # Process video files
