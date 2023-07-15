@@ -127,6 +127,10 @@ process_video_files() {
 # Parse command-line arguments
 while (( "$#" )); do
   case "$1" in
+    -h|--help)
+        display_help
+        exit 0
+        ;;
     -e|--extensions)
       if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
         extensions=$2
