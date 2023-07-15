@@ -61,13 +61,13 @@ After you've installed all the necessary dependencies and have verified that Whi
 3. **Make the script executable**: Before you can run the script, you need to make it executable. You can do this with the `chmod` command:
 
    ```bash
-   chmod +x whisper_process_videos.sh
+   chmod +x whisper-batch-subtitler.sh
    ```
 
 Now, you can run the script using the following syntax:
 
 ```bash
-./whisper_process_videos.sh [OPTIONS] <dir>
+./whisper-batch-subtitler.sh [OPTIONS] <dir>
 ```
 
 Please replace `<dir>` with the directory of the videos you want to process. If you don't specify a directory, the script will use the current one. Refer to the "Usage" section above for information about the different options available with this script.
@@ -77,7 +77,7 @@ Remember, always ensure the `whisper` program is properly installed and function
 ## Usage
 
 ```bash
-./whisper_process_videos.sh [OPTIONS] <dir>
+./whisper-batch-subtitler.sh [OPTIONS] <dir>
 ```
 
 Here, `<dir>` denotes the directory to process. In the absence of a specified directory, the script will default to the current directory.
