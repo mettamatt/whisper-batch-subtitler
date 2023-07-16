@@ -5,7 +5,6 @@ extensions="mp4,mkv,avi,flv,wmv"
 language="en"
 output_format="txt,vtt,srt,tsv,json"
 nice_flag=0
-=''
 task="transcribe"
 model="small"
 
@@ -89,7 +88,7 @@ process_video_files() {
     # Check if there are any video files with given extensions in the directory
     ext_found=0
     for ext in ${extensions//,/ }; do
-        if find "$dir" -type f -name "*.$ext" | read; then
+        if find "$dir" -type f -name "*.$ext" | read -r; then
             ext_found=1
             break
         fi
@@ -103,7 +102,6 @@ process_video_files() {
       for ext in ${extensions//,/ }; do
           find "$dir" -type f -name "*.$ext" -print0 | while IFS= read -r -d '' file; do
               # Extract base name and directory for the file
-              base_name="$(basename "$file" ".$ext")"
               dir_name="$(dirname "$file")"
               
               echo "------------------------------"
@@ -142,7 +140,7 @@ while (( "$#" )); do
       ;;
     -l|--language)
       if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
-        if echo $valid_languages | grep -wq $2; then
+        if echo "$valid_languages" | grep -wq "$2"; then
           language=$2
           shift 2
         else
@@ -187,7 +185,7 @@ while (( "$#" )); do
       ;;
     -m|--model)
       if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
-        if echo $valid_models | grep -wq $2; then
+        if echo "$valid_models" | grep -wq "$2"; then
           model=$2
           shift 2
         else
@@ -201,7 +199,7 @@ while (( "$#" )); do
       ;;
     -t|--task)
       if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
-        if echo $valid_tasks | grep -wq $2; then
+        if echo "$valid_tasks" | grep -wq "$2"; then
           task=$2
           shift 2
         else
@@ -217,10 +215,14 @@ while (( "$#" )); do
       shift
       break
       ;;
-    -*|--*=) # unsupported flags
-      echo "Error: Unsupported flag $1" >&2
-      exit 1
-      ;;
+      --*=) # unsupported flags with '='
+        echo "Error: Unsupported flag $1" >&2
+        exit 1
+        ;;
+      -*) # unsupported flags
+        echo "Error: Unsupported flag $1" >&2
+        exit 1
+        ;;
     *) # preserve positional arguments
       PARAMS="$PARAMS $1"
       shift
@@ -232,10 +234,10 @@ done
 eval set -- "$PARAMS"
 
 # Check if a directory has been specified, if not, use the current directory
-if [ -z "$@" ]; then
+if [ $# -eq 0 ]; then
     dir="."
 else
-    dir="${@%/}"
+    dir="${1%/}"
 fi
 
 # Process video files
