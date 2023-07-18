@@ -64,6 +64,27 @@ display_help() {
     exit 1
 }
 
+# Function to format duration
+format_duration() {
+  local duration=$1
+
+  local seconds=$((duration % 60))
+  local minutes=$((duration / 60 % 60))
+  local hours=$((duration / 3600 % 24))
+  local days=$((duration / 86400))
+
+  if ((days > 0)); then
+    printf '%d days ' $days
+  fi
+  if ((hours > 0)); then
+    printf '%d hours ' $hours
+  fi
+  if ((minutes > 0)); then
+    printf '%d minutes ' $minutes
+  fi
+  printf '%d seconds' $seconds
+}
+
 # Function to process video files
 process_video_files() {
     dir=$1
@@ -103,9 +124,12 @@ process_video_files() {
           find "$dir" -type f -name "*.$ext" -print0 | while IFS= read -r -d '' file; do
               # Extract base name and directory for the file
               dir_name="$(dirname "$file")"
-              
+
+              # Log start time
+              start_time=$(date +%s)
+
               echo "------------------------------"
-              echo "Processing file: $file"   # Display the current file being processed
+              echo "[$(date -d @$start_time)] Processing file: $file"   # Display the current file being processed
               
               if [ -n "$nice_command" ]; then
                   whisper_command="${nice_command} whisper --task \"${task}\" --language \"${language}\" --model \"${model}\" --output_format \"${output_format}\" --output_dir \"${dir_name}\" \"${file}\""
@@ -113,11 +137,19 @@ process_video_files() {
                   whisper_command="whisper --task \"${task}\" --language \"${language}\" --model \"${model}\" --output_format \"${output_format}\" --output_dir \"${dir_name}\" \"${file}\""
                 fi
               echo "  Running: $whisper_command"
-              echo "------------------------------"
-              echo ""
+              
               if ! eval "$whisper_command"; then
                   echo "Error: Failed to process file $file" >&2
               fi
+
+              # Log finish time
+              finish_time=$(date +%s)
+              duration=$((finish_time - start_time))
+              formatted_duration=$(format_duration $duration)
+
+              echo "[$(date -d @$finish_time)] Finished: $formatted_duration"
+              echo "------------------------------"
+              echo ""
           done
       done
 }
