@@ -129,7 +129,7 @@ process_video_files() {
               start_time=$(date +%s)
 
               echo "------------------------------"
-              echo "[$(date -d @$start_time)] Processing file: $file"   # Display the current file being processed
+              echo "[$(date -r $start_time)] Processing file: $file"   # Display the current file being processed
               
               if [ -n "$nice_command" ]; then
                   whisper_command="${nice_command} whisper --task \"${task}\" --language \"${language}\" --model \"${model}\" --output_format \"${output_format}\" --output_dir \"${dir_name}\" \"${file}\""
@@ -147,7 +147,7 @@ process_video_files() {
               duration=$((finish_time - start_time))
               formatted_duration=$(format_duration $duration)
 
-              echo "[$(date -d @$finish_time)] Finished: $formatted_duration"
+              echo "[$(date -r $finish_time)] Finished: $formatted_duration"
               echo "------------------------------"
               echo ""
           done
@@ -275,4 +275,6 @@ fi
 # Process video files
 process_video_files "$dir" "$extensions" "$language" "$output_format" "$nice_command" "$task" "$model"
 
-echo "Script completed successfully. All video files have been processed."
+if [ "$interrupted" -eq 0 ]; then
+    echo "Script completed successfully. All video files have been processed."
+fi
